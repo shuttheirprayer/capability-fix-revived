@@ -1,5 +1,8 @@
 # Capability Fix Revived
 
+### What is the difference:
+- This mod doesn't run behind at your server 24/7.. yes that's it. Of course there's some more informative texts. Other than that this is the only change.
+
 ## How to use:
 - **Start Recording:** Run /capability_fix_revived toggle_recording. You will see a [🔧] Capability Fix | recording has started message.
 
