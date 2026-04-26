@@ -1,4 +1,4 @@
-package com.misanthropy.linggango.capabilityfix.init;
+package com.misanthropy.linggango.capability_fix_revived.init;
 
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -35,7 +35,7 @@ public class CFConfig {
 	}
 
 	private static void register(ModConfig.Type type, IConfigSpec<?> spec) {
-		String path = CapabilityFix.MODID + "/" + CapabilityFix.MODID + "-" + type.extension() + ".toml";
+		String path = capability_fix_revived.MODID + "/" + capability_fix_revived.MODID + "-" + type.extension() + ".toml";
 		ModLoadingContext.get().registerConfig(type, spec, path);
 	}
 }

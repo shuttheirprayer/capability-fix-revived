@@ -1,8 +1,8 @@
-package com.misanthropy.linggango.capabilityfix.mixin;
+package com.misanthropy.linggango.capability_fix_revived.mixin;
 
 import com.google.common.collect.Maps;
-import com.misanthropy.linggango.capabilityfix.content.CapabilityCache;
-import com.misanthropy.linggango.capabilityfix.init.CapabilityFix;
+import com.misanthropy.linggango.capability_fix_revived.content.CapabilityCache;
+import com.misanthropy.linggango.capability_fix_revived.init.capability_fix_revived;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.Entity;
 import net.minecraftforge.common.capabilities.Capability;
@@ -27,35 +27,35 @@ public abstract class EntityMixin extends CapabilityProvider<Entity> {
 	}
 
 	@Unique
-	private int capabilityfix$cacheVersion = CapabilityFix.VERSION;
+	private int capability_fix_revived$cacheVersion = capability_fix_revived.VERSION;
 	@Unique
-	private final Map<Capability<?>, CapabilityCache<?>> capabilityfix$cache = Maps.newIdentityHashMap();
+	private final Map<Capability<?>, CapabilityCache<?>> capability_fix_revived$cache = Maps.newIdentityHashMap();
 
 	@Override
 	public void invalidateCaps() {
-		capabilityfix$cache.clear();
+		capability_fix_revived$cache.clear();
 		super.invalidateCaps();
 	}
 
 	@Override
 	public void reviveCaps() {
-		capabilityfix$cache.clear();
+		capability_fix_revived$cache.clear();
 		super.reviveCaps();
 	}
 
 	@Override
 	public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-		if (side == null && CapabilityFix.isValidForCaching(cap)) {
-			if (capabilityfix$cacheVersion != CapabilityFix.VERSION) {
-				capabilityfix$cacheVersion = CapabilityFix.VERSION;
-				capabilityfix$cache.clear();
+		if (side == null && capability_fix_revived.isValidForCaching(cap)) {
+			if (capability_fix_revived$cacheVersion != capability_fix_revived.VERSION) {
+				capability_fix_revived$cacheVersion = capability_fix_revived.VERSION;
+				capability_fix_revived$cache.clear();
 			}
-			var lookup = capabilityfix$cache.get(cap);
+			var lookup = capability_fix_revived$cache.get(cap);
 			if (lookup != null) {
 				return lookup.data().cast();
 			}
 			var ans = super.getCapability(cap, null);
-			capabilityfix$cache.put(cap, new CapabilityCache<>(cap, ans, tickCount));
+			capability_fix_revived$cache.put(cap, new CapabilityCache<>(cap, ans, tickCount));
 			return ans;
 		}
 		return super.getCapability(cap, side);

@@ -1,4 +1,4 @@
-package com.misanthropy.linggango.capabilityfix.content;
+package com.misanthropy.linggango.capability_fix_revived.content;
 
 import net.minecraftforge.common.capabilities.Capability;
 

@@ -1,9 +1,9 @@
 {
   "required": true,
   "priority": 1000,
-  "package": "com.misanthropy.linggango.capabilityfix.mixin",
+  "package": "com.misanthropy.linggango.capability_fix_revived.mixin",
   "compatibilityLevel": "JAVA_17",
-  "refmap": "capabilityfix.refmap.json",
+  "refmap": "capability_fix_revived.refmap.json",
   "mixins": [
     "EntityMixin"
   ],

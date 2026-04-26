@@ -1,7 +1,7 @@
-package com.misanthropy.linggango.capabilityfix.event;
+package com.misanthropy.linggango.capability_fix_revived.event;
 
-import com.misanthropy.linggango.capabilityfix.init.CFConfig;
-import com.misanthropy.linggango.capabilityfix.init.CapabilityFix;
+import com.misanthropy.linggango.capability_fix_revived.init.CFConfig;
+import com.misanthropy.linggango.capability_fix_revived.init.capability_fix_revived;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.ChatFormatting;
@@ -13,14 +13,14 @@ import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-@Mod.EventBusSubscriber(modid = CapabilityFix.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@Mod.EventBusSubscriber(modid = capability_fix_revived.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ServerCommands {
 
 	private static final String ICON = "🔧";
 
 	@SubscribeEvent
 	public static void serverCommandRegister(RegisterCommandsEvent event) {
-		LiteralArgumentBuilder<CommandSourceStack> base = Commands.literal("capabilityfix");
+		LiteralArgumentBuilder<CommandSourceStack> base = Commands.literal("capability_fix_revived");
 
 		base.then(Commands.literal("reload_config").executes(ServerCommands::reload))
 				.then(Commands.literal("toggle_recording").executes(ServerCommands::toggleRecording))
@@ -47,8 +47,8 @@ public class ServerCommands {
 	}
 
 	private static int toggleRecording(CommandContext<CommandSourceStack> ctx) {
-		CapabilityFix.isRecording = !CapabilityFix.isRecording;
-		ctx.getSource().sendSystemMessage(getStatusMessage(CapabilityFix.isRecording));
+		capability_fix_revived.isRecording = !capability_fix_revived.isRecording;
+		ctx.getSource().sendSystemMessage(getStatusMessage(capability_fix_revived.isRecording));
 		return 1;
 	}
 
@@ -65,14 +65,14 @@ public class ServerCommands {
 				getPrefix().append(Component.literal("Generating report...").withStyle(ChatFormatting.GRAY).withStyle(ChatFormatting.ITALIC))
 		);
 
-		CapabilityFix.writeReport(ctx.getSource());
+		capability_fix_revived.writeReport(ctx.getSource());
 		return 1;
 	}
 
 	private static int reload(CommandContext<CommandSourceStack> ctx) {
-		CapabilityFix.CACHE.clear();
-		CapabilityFix.SET = null;
-		CapabilityFix.VERSION++;
+		capability_fix_revived.CACHE.clear();
+		capability_fix_revived.SET = null;
+		capability_fix_revived.VERSION++;
 
 		MutableComponent message = getPrefix()
 				.append(Component.literal("Cleared the cache and config.").withStyle(ChatFormatting.GRAY).withStyle(ChatFormatting.ITALIC));

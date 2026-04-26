@@ -1,7 +1,7 @@
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
 
-package com.misanthropy.linggango.capabilityfix.event; // Remains untouched
+package com.misanthropy.linggango.capability_fix_revived.init; // Remains untouched
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 

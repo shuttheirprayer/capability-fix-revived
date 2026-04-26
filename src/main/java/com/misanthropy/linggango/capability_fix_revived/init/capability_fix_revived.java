@@ -1,8 +1,8 @@
-package com.misanthropy.linggango.capabilityfix.init; // Ignore the delays, i love em.
+package com.misanthropy.linggango.capability_fix_revived.init; // Ignore the delays, i love em.
 
 import com.google.common.collect.Maps;
-import com.misanthropy.linggango.capabilityfix.content.CapabilityTypeCache;
-import com.misanthropy.linggango.capabilityfix.event.ServerCommands;
+import com.misanthropy.linggango.capability_fix_revived.content.CapabilityTypeCache;
+import com.misanthropy.linggango.capability_fix_revived.event.ServerCommands;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
@@ -21,9 +21,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
-@Mod(CapabilityFix.MODID)
-public class CapabilityFix {
-	public static final String MODID = "capabilityfix";
+@Mod(capability_fix_revived.MODID)
+public class capability_fix_revived {
+	public static final String MODID = "capability_fix_revived";
 	public static final Logger LOGGER = LogManager.getLogger();
 
 	public static int VERSION = 0;
@@ -31,7 +31,7 @@ public class CapabilityFix {
 	public static final Map<Capability<?>, CapabilityTypeCache> CACHE = Maps.newIdentityHashMap();
 	public static Set<String> SET = null;
 
-	public CapabilityFix() {
+	public capability_fix_revived() {
 		CFConfig.init();
 	}
 
@@ -64,8 +64,8 @@ public class CapabilityFix {
 				Path reportFile = reportPath.resolve("capability_report.txt");
 
 				try (FileWriter writer = new FileWriter(reportFile.toFile())) {
-					writer.write("CapabilityFix Report\n");
-					writer.write("Instructions: Copy the IDs below into your capabilityfix-common.toml whitelist.\n");
+					writer.write("capability_fix_revived Report\n");
+					writer.write("Instructions: Copy the IDs below into your capability_fix_revived-common.toml whitelist.\n");
 					writer.write("WARNING: Only whitelist capabilities you know are static on entities.\n\n");
 
 					CACHE.values().stream()
@@ -79,7 +79,7 @@ public class CapabilityFix {
 								}
 							});
 
-					LOGGER.info("CapabilityFix: Report written to {}", reportFile.toAbsolutePath());
+					LOGGER.info("capability_fix_revived: Report written to {}", reportFile.toAbsolutePath());
 
 					try {
 						Thread.sleep(500);
@@ -98,7 +98,7 @@ public class CapabilityFix {
 					}
 				}
 			} catch (IOException e) {
-				LOGGER.error("Failed to create directories or write CapabilityFix report", e);
+				LOGGER.error("Failed to create directories or write capability_fix_revived report", e);
 				try { Thread.sleep(500); } catch (InterruptedException ignored) {}
 				source.sendSystemMessage(ServerCommands.getPrefix()
 						.append(Component.literal("Failed to generate report!").withStyle(ChatFormatting.RED)));
