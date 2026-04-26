@@ -1,0 +1,25 @@
+modLoader="javafml"
+loaderVersion="[40,)"
+license="LGPL v2.1"
+[[mods]]
+modId="capability_fix_revived"
+version="${file.jarVersion}" #mandatory
+displayName="Capability Fix Revived" #mandatory
+logoFile="capability_fix_revived.png" #optional
+credits="Thanks lcy0x1" #optional
+authors="lcy0x1, Misanthropy and LightLand team" #optional
+description='''
+A mod improving capability fetch by caching them.
+'''
+[[dependencies.capability_fix_revived]]
+    modId="forge"
+    mandatory=true
+    versionRange="[47.1.0,)"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.capability_fix_revived]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.20.1,1.20.2)"
+    ordering="NONE"
+    side="BOTH"
