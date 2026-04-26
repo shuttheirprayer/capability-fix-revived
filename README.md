@@ -1,4 +1,4 @@
-# Capability Fix
+# Capability Fix Revived
 
 ## How to use:
 - **Start Recording:** Run /capabilityfix toggle_recording. You will see a [🔧] Capability Fix | recording has started message.
