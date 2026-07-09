@@ -2,7 +2,6 @@ package com.misanthropy.linggango.capability_fix_revived.init;
 
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.config.IConfigSpec;
 import net.minecraftforge.fml.config.ModConfig;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -17,7 +16,16 @@ public class CFConfig {
 
 		Common(ForgeConfigSpec.Builder builder) {
 			cacheAll = builder.comment("Cache all entity capabilities. Could cause problems. Use it with caution").define("cacheAll", false);
-			capabilityCachingWhitelist = builder.define("capabilityCachingWhitelist", new ArrayList<>(List.of("top/theillusivec4/curios/api/type/capability/ICuriosItemHandler")));
+			capabilityCachingWhitelist = builder.define("capabilityCachingWhitelist", new ArrayList<>(List.of(
+					"top/theillusivec4/curios/api/type/capability/ICuriosItemHandler",
+					"net/v_black_cat/goetydelight/visual/EntityVisualEffects",
+					"com/Polarice3/Goety/common/capabilities/soulenergy/ISoulEnergy",
+					"org/thecelestialworkshop/celestisynth/common/capabilities/CSEntityCapability",
+					"com/bobmowzie/mowziesmobs/server/capability/FrozenCapability$IFrozenCapability",
+					"com/bobmowzie/mowziesmobs/server/capability/AbilityCapability$IAbilityCapability",
+					"com/Polarice3/Goety/common/capabilities/lichdom/ILichdom",
+					"com/Polarice3/Goety/common/capabilities/misc/IMisc"
+			)));
 		}
 	}
 
@@ -31,11 +39,11 @@ public class CFConfig {
 	}
 
 	public static void init() {
-		register(ModConfig.Type.COMMON, COMMON_SPEC);
+		register();
 	}
 
-	private static void register(ModConfig.Type type, IConfigSpec<?> spec) {
-		String path = capability_fix_revived.MODID + "/" + capability_fix_revived.MODID + "-" + type.extension() + ".toml";
-		ModLoadingContext.get().registerConfig(type, spec, path);
+	private static void register() {
+		String path = capability_fix_revived.MODID + "/" + capability_fix_revived.MODID + "-" + ModConfig.Type.COMMON.extension() + ".toml";
+		ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, CFConfig.COMMON_SPEC, path);
 	}
 }

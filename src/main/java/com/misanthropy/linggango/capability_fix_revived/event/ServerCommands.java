@@ -11,9 +11,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
 
-@Mod.EventBusSubscriber(modid = capability_fix_revived.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ServerCommands {
 
 	private static final String ICON = "🔧";

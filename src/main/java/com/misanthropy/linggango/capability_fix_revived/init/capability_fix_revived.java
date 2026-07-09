@@ -1,4 +1,4 @@
-package com.misanthropy.linggango.capability_fix_revived.init; // Ignore the delays, i love em.
+package com.misanthropy.linggango.capability_fix_revived.init;
 
 import com.google.common.collect.Maps;
 import com.misanthropy.linggango.capability_fix_revived.content.CapabilityTypeCache;
@@ -6,9 +6,9 @@ import com.misanthropy.linggango.capability_fix_revived.event.ServerCommands;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.loading.FMLPaths;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -33,6 +33,8 @@ public class capability_fix_revived {
 
 	public capability_fix_revived() {
 		CFConfig.init();
+		// Manually register ServerCommands to bypass EventBusSubscriber FML errors
+		MinecraftForge.EVENT_BUS.register(ServerCommands.class);
 	}
 
 	public static <T> boolean isValidForCaching(Capability<T> cap) {
@@ -50,14 +52,20 @@ public class capability_fix_revived {
 			SET = new HashSet<>(CFConfig.COMMON.capabilityCachingWhitelist.get());
 		}
 
-		boolean isWhitelisted = SET.contains(cap.getName());
+		String name = cap.getName();
+		// Normalize dots and slashes to fix config-versus-registry mismatch
+		boolean isWhitelisted = SET.contains(name)
+				|| SET.contains(name.replace('.', '/'))
+				|| SET.contains(name.replace('/', '.'));
+
 		CACHE.put(cap, new CapabilityTypeCache(cap, isWhitelisted));
 		return isWhitelisted;
 	}
 
 	public static void writeReport(CommandSourceStack source) {
 		CompletableFuture.runAsync(() -> {
-			Path reportPath = FMLPaths.CONFIGDIR.get().resolve(MODID).resolve("reports");
+			// Bypassed FMLPaths using standard Java Path API
+			Path reportPath = Path.of("config").resolve(MODID).resolve("reports");
 
 			try {
 				Files.createDirectories(reportPath);

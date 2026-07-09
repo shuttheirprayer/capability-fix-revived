@@ -16,6 +16,7 @@ import org.spongepowered.asm.mixin.Unique;
 
 import java.util.Map;
 
+@SuppressWarnings("UnstableApiUsage")
 @Mixin(Entity.class)
 public abstract class EntityMixin extends CapabilityProvider<Entity> {
 
@@ -55,7 +56,10 @@ public abstract class EntityMixin extends CapabilityProvider<Entity> {
 				return lookup.data().cast();
 			}
 			var ans = super.getCapability(cap, null);
-			capability_fix_revived$cache.put(cap, new CapabilityCache<>(cap, ans, tickCount));
+			if (ans.isPresent()) {
+				ans.addListener(opt -> capability_fix_revived$cache.remove(cap));
+				capability_fix_revived$cache.put(cap, new CapabilityCache<>(cap, ans, tickCount));
+			}
 			return ans;
 		}
 		return super.getCapability(cap, side);
