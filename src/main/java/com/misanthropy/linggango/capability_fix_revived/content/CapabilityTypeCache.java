@@ -6,11 +6,13 @@ public final class CapabilityTypeCache {
 
 	private final Capability<?> cap;
 	private final boolean cached;
+	private final int version;
 	public int count = 1;
 
-	public CapabilityTypeCache(Capability<?> cap, boolean cached) {
+	public CapabilityTypeCache(Capability<?> cap, boolean cached, int version) {
 		this.cap = cap;
 		this.cached = cached;
+		this.version = version;
 	}
 
 	public Capability<?> cap() {
@@ -21,5 +23,7 @@ public final class CapabilityTypeCache {
 		return cached;
 	}
 
-
+	public int version() {
+		return version;
+	}
 }

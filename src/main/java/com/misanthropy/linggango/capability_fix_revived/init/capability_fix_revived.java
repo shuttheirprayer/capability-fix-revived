@@ -1,6 +1,6 @@
 package com.misanthropy.linggango.capability_fix_revived.init;
 
-import com.google.common.collect.Maps;
+import com.misanthropy.linggango.capability_fix_revived.content.CapabilityCacheHolder;
 import com.misanthropy.linggango.capability_fix_revived.content.CapabilityTypeCache;
 import com.misanthropy.linggango.capability_fix_revived.event.ServerCommands;
 import net.minecraft.ChatFormatting;
@@ -16,10 +16,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Mod(capability_fix_revived.MODID)
 public class capability_fix_revived {
@@ -28,45 +30,55 @@ public class capability_fix_revived {
 
 	public static int VERSION = 0;
 	public static boolean isRecording = false;
-	public static final Map<Capability<?>, CapabilityTypeCache> CACHE = Maps.newIdentityHashMap();
+	public static final Map<Capability<?>, CapabilityTypeCache> CACHE = new ConcurrentHashMap<>();
 	public static Set<String> SET = null;
 
 	public capability_fix_revived() {
 		CFConfig.init();
-		// Manually register ServerCommands to bypass EventBusSubscriber FML errors
 		MinecraftForge.EVENT_BUS.register(ServerCommands.class);
 	}
 
 	public static <T> boolean isValidForCaching(Capability<T> cap) {
 		if (CFConfig.COMMON.cacheAll.get()) return true;
 
-		var lookup = CACHE.get(cap);
-		if (lookup != null) {
-			if (isRecording && !lookup.cached()) {
-				lookup.count++;
-			}
+		CapabilityCacheHolder holder = (CapabilityCacheHolder) (Object) cap;
+		int version = VERSION;
+		CapabilityTypeCache lookup = holder.capability_fix_revived$entry();
+		if (lookup != null && lookup.version() == version) {
+			if (!lookup.cached() && isRecording) lookup.count++;
 			return lookup.cached();
 		}
 
-		if (SET == null) {
-			SET = new HashSet<>(CFConfig.COMMON.capabilityCachingWhitelist.get());
+		lookup = CACHE.get(cap);
+		if (lookup == null) {
+			Set<String> set = SET;
+			if (set == null) SET = set = new HashSet<>(CFConfig.COMMON.capabilityCachingWhitelist.get());
+
+			String name = cap.getName();
+			boolean isWhitelisted = set.contains(name)
+					|| set.contains(name.replace('.', '/'))
+					|| set.contains(name.replace('/', '.'));
+
+			lookup = new CapabilityTypeCache(cap, isWhitelisted, version);
+			CACHE.put(cap, lookup);
+		} else if (!lookup.cached() && isRecording) {
+			lookup.count++;
 		}
+		if (lookup.version() == version) holder.capability_fix_revived$setEntry(lookup);
+		return lookup.cached();
+	}
 
-		String name = cap.getName();
-		// Normalize dots and slashes to fix config-versus-registry mismatch
-		boolean isWhitelisted = SET.contains(name)
-				|| SET.contains(name.replace('.', '/'))
-				|| SET.contains(name.replace('/', '.'));
+	private record Entry(String name, int count) {}
 
-		CACHE.put(cap, new CapabilityTypeCache(cap, isWhitelisted));
-		return isWhitelisted;
+	private static void pause() {
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException ignored) {}
 	}
 
 	public static void writeReport(CommandSourceStack source) {
 		CompletableFuture.runAsync(() -> {
-			// Bypassed FMLPaths using standard Java Path API
 			Path reportPath = Path.of("config").resolve(MODID).resolve("reports");
-
 			try {
 				Files.createDirectories(reportPath);
 				Path reportFile = reportPath.resolve("capability_report.txt");
@@ -76,22 +88,21 @@ public class capability_fix_revived {
 					writer.write("Instructions: Copy the IDs below into your capability_fix_revived-common.toml whitelist.\n");
 					writer.write("WARNING: Only whitelist capabilities you know are static on entities.\n\n");
 
-					CACHE.values().stream()
-							.filter(e -> !e.cached() && e.count > 0)
-							.sorted((a, b) -> Integer.compare(b.count, a.count))
-							.forEach(e -> {
-								try {
-									writer.write(String.format("%s (Calls tracked: %d)\n", e.cap().getName(), e.count));
-								} catch (IOException ioException) {
-									LOGGER.error("Failed to write capability entry to report: {}", e.cap().getName(), ioException);
-								}
-							});
+					for (Entry e : CACHE.values().stream()
+							.filter(c -> !c.cached())
+							.map(c -> new Entry(c.cap().getName(), c.count))
+							.filter(c -> c.count() > 0)
+							.sorted(Comparator.comparingInt(Entry::count).reversed())
+							.toList()) {
+						try {
+							writer.write(String.format("%s (Calls tracked: %d)\n", e.name(), e.count()));
+						} catch (IOException ioException) {
+							LOGGER.error("Failed to write capability entry to report: {}", e.name(), ioException);
+						}
+					}
 
 					LOGGER.info("capability_fix_revived: Report written to {}", reportFile.toAbsolutePath());
-
-					try {
-						Thread.sleep(500);
-					} catch (InterruptedException ignored) {}
+					pause();
 
 					source.sendSystemMessage(ServerCommands.getPrefix()
 							.append(Component.literal("Done! Report file is located at: ").withStyle(ChatFormatting.GRAY))
@@ -99,15 +110,13 @@ public class capability_fix_revived {
 
 					if (isRecording) {
 						isRecording = false;
-						try {
-							Thread.sleep(500);
-						} catch (InterruptedException ignored) {}
+						pause();
 						source.sendSystemMessage(ServerCommands.getStatusMessage(false));
 					}
 				}
 			} catch (IOException e) {
 				LOGGER.error("Failed to create directories or write capability_fix_revived report", e);
-				try { Thread.sleep(500); } catch (InterruptedException ignored) {}
+				pause();
 				source.sendSystemMessage(ServerCommands.getPrefix()
 						.append(Component.literal("Failed to generate report!").withStyle(ChatFormatting.RED)));
 			}
