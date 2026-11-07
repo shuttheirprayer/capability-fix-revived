@@ -52,6 +52,7 @@ public class ServerCommands {
 	private static int reload(CommandContext<CommandSourceStack> ctx) {
 		capability_fix_revived.CACHE.clear();
 		capability_fix_revived.SET = null;
+		capability_fix_revived.CACHE_ALL = CFConfig.COMMON.cacheAll.get();
 		capability_fix_revived.VERSION++;
 		ctx.getSource().sendSystemMessage(info("Cleared the cache and config."));
 		return 1;

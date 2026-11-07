@@ -9,6 +9,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -32,14 +34,23 @@ public class capability_fix_revived {
 	public static boolean isRecording = false;
 	public static final Map<Capability<?>, CapabilityTypeCache> CACHE = new ConcurrentHashMap<>();
 	public static Set<String> SET = null;
+	public static volatile boolean CACHE_ALL = false;
 
 	public capability_fix_revived() {
 		CFConfig.init();
+		FMLJavaModLoadingContext.get().getModEventBus().addListener(capability_fix_revived::onConfig);
 		MinecraftForge.EVENT_BUS.register(ServerCommands.class);
 	}
 
+	private static void onConfig(ModConfigEvent event) {
+		if (event.getConfig().getSpec() != CFConfig.COMMON_SPEC) return;
+		CACHE_ALL = CFConfig.COMMON.cacheAll.get();
+		SET = null;
+		VERSION++;
+	}
+
 	public static <T> boolean isValidForCaching(Capability<T> cap) {
-		if (CFConfig.COMMON.cacheAll.get()) return true;
+		if (CACHE_ALL) return true;
 
 		CapabilityCacheHolder holder = (CapabilityCacheHolder) (Object) cap;
 		int version = VERSION;

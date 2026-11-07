@@ -55,3 +55,4 @@ curseforge/
 *.zip
 gradlew
 gradlew.bat
+libs/
