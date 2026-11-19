@@ -60,6 +60,12 @@ public abstract class EntityMixin extends CapabilityProvider<Entity> {
 			}
 			ans.addListener(opt -> capability_fix_revived$cache.remove(cap, opt));
 			cache.put(cap, ans);
+		} else if (getCapabilities() != null && capability_fix_revived.cachesAbsent(cap)) {
+			if (cache == null) {
+				capability_fix_revived$cache = cache = Maps.newIdentityHashMap();
+				capability_fix_revived$cacheVersion = capability_fix_revived.VERSION;
+			}
+			cache.put(cap, LazyOptional.empty());
 		}
 		return ans;
 	}

@@ -34,6 +34,7 @@ public class capability_fix_revived {
 	public static boolean isRecording = false;
 	public static final Map<Capability<?>, CapabilityTypeCache> CACHE = new ConcurrentHashMap<>();
 	public static Set<String> SET = null;
+	public static Set<String> ABSENT_SET = null;
 	public static volatile boolean CACHE_ALL = false;
 
 	public capability_fix_revived() {
@@ -46,6 +47,7 @@ public class capability_fix_revived {
 		if (event.getConfig().getSpec() != CFConfig.COMMON_SPEC) return;
 		CACHE_ALL = CFConfig.COMMON.cacheAll.get();
 		SET = null;
+		ABSENT_SET = null;
 		VERSION++;
 	}
 
@@ -61,22 +63,35 @@ public class capability_fix_revived {
 		}
 
 		lookup = CACHE.get(cap);
-		if (lookup == null) {
+		if (lookup == null || lookup.version() != version) {
 			Set<String> set = SET;
 			if (set == null) SET = set = new HashSet<>(CFConfig.COMMON.capabilityCachingWhitelist.get());
 
-			String name = cap.getName();
-			boolean isWhitelisted = set.contains(name)
-					|| set.contains(name.replace('.', '/'))
-					|| set.contains(name.replace('/', '.'));
+			Set<String> absentSet = ABSENT_SET;
+			if (absentSet == null) ABSENT_SET = absentSet = new HashSet<>(CFConfig.COMMON.absentCachingWhitelist.get());
 
-			lookup = new CapabilityTypeCache(cap, isWhitelisted, version);
+			String name = cap.getName();
+			boolean cachesAbsent = isListed(absentSet, name);
+			boolean isWhitelisted = cachesAbsent || isListed(set, name);
+
+			lookup = new CapabilityTypeCache(cap, isWhitelisted, cachesAbsent, version);
 			CACHE.put(cap, lookup);
 		} else if (!lookup.cached() && isRecording) {
 			lookup.count++;
 		}
 		if (lookup.version() == version) holder.capability_fix_revived$setEntry(lookup);
 		return lookup.cached();
+	}
+
+	private static boolean isListed(Set<String> set, String name) {
+		return set.contains(name)
+				|| set.contains(name.replace('.', '/'))
+				|| set.contains(name.replace('/', '.'));
+	}
+
+	public static boolean cachesAbsent(Capability<?> cap) {
+		CapabilityTypeCache entry = ((CapabilityCacheHolder) (Object) cap).capability_fix_revived$entry();
+		return entry != null && entry.version() == VERSION && entry.cachedAbsent();
 	}
 
 	private record Entry(String name, int count) {}

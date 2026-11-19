@@ -13,6 +13,7 @@ public class CFConfig {
 	public static class Common {
 		public final ForgeConfigSpec.BooleanValue cacheAll;
 		public final ForgeConfigSpec.ConfigValue<List<String>> capabilityCachingWhitelist;
+		public final ForgeConfigSpec.ConfigValue<List<String>> absentCachingWhitelist;
 
 		Common(ForgeConfigSpec.Builder builder) {
 			cacheAll = builder.comment("Cache all entity capabilities. Could cause problems. Use it with caution").define("cacheAll", false);
@@ -115,6 +116,12 @@ public class CFConfig {
 					"com/wdiscute/starcatcher/registry/SCDataAttachments$MessagesCaughtAttachmentCap",
 					"com/wdiscute/starcatcher/registry/SCDataAttachments$ModifiersAttachmentCap",
 					"com/wdiscute/starcatcher/registry/SCDataAttachments$TrackedFishAttachmentCap"
+			)));
+			absentCachingWhitelist = builder
+					.comment("Capabilities whose absence is also cached. Only list capabilities that are attached, or not, once when the entity is created. Listing one here caches it in both directions")
+					.define("absentCachingWhitelist", new ArrayList<>(List.of(
+					"com/eeeab/eeeabsmobs/sever/capability/AbilityCapability$IAbilityCapability",
+					"com/mega/revelationfix/common/capability/entity/FrostProvenanceCapability"
 			)));
 		}
 	}
